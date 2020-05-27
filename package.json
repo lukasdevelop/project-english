@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": " cross-env NODE_ENV=development PORT=3333 nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node --experimental-modules src/server.js"
   },
   "keywords": [],
   "author": "Lucas Amaral",
