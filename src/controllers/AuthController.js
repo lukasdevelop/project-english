@@ -10,14 +10,15 @@ const generateToken = (params = {}) => {
 }
 
 const create = async (req, res) => {
-  const {name, email, password} = req.body
+  const {name, email, password, github, facebook, code} = req.body
   const hash = bcrypt.hashSync(password, 10)
 
   try {
   const verifyEmail = await connection('users')
   .select('email')
+  .where('email', '=', email)
 
-  if(verifyEmail.length <= 0){
+  if(verifyEmail.length > 0){
     return res.status(400).json({error: 'User already exists'})
   }
 
@@ -25,7 +26,10 @@ const create = async (req, res) => {
       .insert({
         name,
         email,
-        password: hash
+        password: hash,
+        facebook,
+        github,
+        code
       })
       return res.status(200).json({user, token: generateToken({id: user.id})})
   } catch (error) {
@@ -33,10 +37,27 @@ const create = async (req, res) => {
   }
 }
 
+const excluir = async (req, res) => {
+
+  const { id } = req.params
+  try {
+    const user = await connection('users')
+      .select('*')
+      .where('id', '=', id)
+      .del()
+
+    return res.status(200).json({user})
+
+  } catch (error) {
+    return res.status(500).send({error})
+  }
+}
+
 const index = async (req, res) => {
   try {
     const users = await connection('users')
-      .select('*')
+      .select('id', 'name', 'email', 'facebook', 'github', 'code', 'status', 'created_at')
+
     return res.status(200).json({users})
   } catch (error) {
       return res.status(500).send({error})
@@ -45,6 +66,7 @@ const index = async (req, res) => {
 
 const authenticate = async (req, res) => {
   const {email, password} = req.body
+  console.log(req.body)
   const [user] = await connection('users')
   .select('*')
   .where('email','=', email)
@@ -63,6 +85,7 @@ const authenticate = async (req, res) => {
 export default {
   create,
   index,
+  excluir,
   authenticate
 }
 
