@@ -33,5 +33,7 @@ routes.post('/auth/sign', celebrate({
 
 routes.post('/auth/forgot-password', AuthController.forgotpassword)
 
+routes.post('/auth/reset-password', AuthController.resetpassword)
+
 
 export default routes

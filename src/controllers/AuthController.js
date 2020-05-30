@@ -58,7 +58,7 @@ const excluir = async (req, res) => {
 const index = async (req, res) => {
   try {
     const users = await connection('users')
-      .select('id', 'name', 'email', 'facebook', 'github', 'code', 'status', 'created_at', 'passwordResetToken', 'passwordResetExpires')
+      .select('*')
 
     return res.status(200).json({ users })
   } catch (error) {
@@ -79,7 +79,6 @@ const authenticate = async (req, res) => {
     if (!await bcrypt.compare(password, user.password))
       return res.status(401).json({ message: "Invalid password" })
 
-    user.password = undefined
 
     return res.status(200).json({ user, token: generateToken({ id: user.id }) })
   } catch (error) {
@@ -129,11 +128,53 @@ const authenticate = async (req, res) => {
   }
  }
 
+ const resetpassword = async(req, res) => {
+   const {email, password} = req.body
+   const {token} = req.query
+
+   try {
+
+    const [user] = await connection('users')
+      .select('id', 'email', 'passwordResetExpires', 'passwordResetToken', 'password')
+      .where('email', '=', email)
+
+    if(!user)
+      return res.status(401).json({ message: "User not found" })
+
+
+    if(token != user.passwordResetToken)
+      return res.status(400).send({ message: 'Token invalid'})
+
+    const now = new Date()
+
+    const hash = bcrypt.hashSync(password, 10)
+
+
+    if( now > user.passwordResetExpires)
+      return res.status(400).send({ message: 'Token expired, generated a new one'})
+
+    await connection('users')
+    .select('id', 'email', 'passwordResetExpires', 'passwordResetToken', 'password')
+    .where('email', '=', email)
+    .update({
+      password: hash
+    })
+
+    return res.status(200).send({message: "Password changed with success"})
+
+   } catch (error) {
+    res.status(500).send({error})
+   }
+
+
+ }
+
 export default {
   create,
   index,
   excluir,
   authenticate,
-  forgotpassword
+  forgotpassword,
+  resetpassword
 }
 
