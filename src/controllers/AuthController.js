@@ -10,17 +10,17 @@ const generateToken = (params = {}) => {
 }
 
 const create = async (req, res) => {
-  const {name, email, password, github, facebook, code} = req.body
+  const { name, email, password, github, facebook, code } = req.body
   const hash = bcrypt.hashSync(password, 10)
 
   try {
-  const verifyEmail = await connection('users')
-  .select('email')
-  .where('email', '=', email)
+    const verifyEmail = await connection('users')
+      .select('email')
+      .where('email', '=', email)
 
-  if(verifyEmail.length > 0){
-    return res.status(400).json({error: 'User already exists'})
-  }
+    if (verifyEmail.length > 0) {
+      return res.status(400).json({ error: 'User already exists' })
+    }
 
     const user = await connection('users')
       .insert({
@@ -31,9 +31,9 @@ const create = async (req, res) => {
         github,
         code
       })
-      return res.status(200).json({user, token: generateToken({id: user.id})})
+    return res.status(200).json({ user, token: generateToken({ id: user.id }) })
   } catch (error) {
-      return res.status(500).send({error})
+    return res.status(500).send({ error })
   }
 }
 
@@ -46,10 +46,10 @@ const excluir = async (req, res) => {
       .where('id', '=', id)
       .del()
 
-    return res.status(200).json({user})
+    return res.status(200).json({ user })
 
   } catch (error) {
-    return res.status(500).send({error})
+    return res.status(500).send({ error })
   }
 }
 
@@ -58,27 +58,31 @@ const index = async (req, res) => {
     const users = await connection('users')
       .select('id', 'name', 'email', 'facebook', 'github', 'code', 'status', 'created_at')
 
-    return res.status(200).json({users})
+    return res.status(200).json({ users })
   } catch (error) {
-      return res.status(500).send({error})
+    return res.status(500).send({ error })
   }
 }
 
 const authenticate = async (req, res) => {
-  const {email, password} = req.body
+  const { email, password } = req.body
   console.log(req.body)
-  const [user] = await connection('users')
-  .select('*')
-  .where('email','=', email)
+  try {
+    const [user] = await connection('users')
+      .select('*')
+      .where('email', '=', email)
 
-  if(!user)
-    return res.status(400).send({error: "User not found"})
-  if(!await bcrypt.compare(password, user.password))
-    return res.status(400).send({error: "Invalid password"})
+    if (!user)
+      return res.status(401).json({ msg: "User not found" })
+    if (!await bcrypt.compare(password, user.password))
+      return res.status(401).json({ msg: "Invalid password" })
 
-  user.password = undefined
+    user.password = undefined
 
-  return res.status(200).json({user, token: generateToken({id: user.id})})
+    return res.status(200).json({ user, token: generateToken({ id: user.id }) })
+  } catch (error) {
+    return res.status(500).send({ error })
+  }
 
 }
 
