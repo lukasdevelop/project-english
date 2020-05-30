@@ -9,6 +9,8 @@ exports.up = function(knex) {
     table.integer('code').default(null);
     table.integer('status').default(0);
     table.string('password').notNullable();
+    table.string('passwordResetToken');
+    table.string('passwordResetExpires');
     table.timestamp('created_at').defaultTo(knex.fn.now());
 
   })

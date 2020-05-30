@@ -6,7 +6,9 @@ import HomeController from './controllers/HomeController'
 import AuthController from './controllers/AuthController'
 
 routes.get('/', HomeController.index)
+
 routes.get('/dashboard', AuthMiddleware, HomeController.dashboard)
+
 routes.post('/auth/register', celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().required(),
@@ -17,13 +19,21 @@ routes.post('/auth/register', celebrate({
     code: Joi.number().allow('', null)
   })
 }), AuthController.create)
+
 routes.get('/users', AuthController.index)
+
 routes.delete('/users/:id', AuthController.excluir)
+
 routes.post('/auth/sign', celebrate({
   [Segments.BODY]: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6)
   })
 }), AuthController.authenticate)
+
+routes.post('/auth/forgot-password', AuthController.forgotpassword)
+
+routes.post('/auth/reset-password', AuthController.resetpassword)
+
 
 export default routes
