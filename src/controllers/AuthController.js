@@ -5,6 +5,7 @@ import authConfig from '../config/auth.json'
 import crypto from 'crypto'
 import mailer from '../modules/mailer'
 
+
 const generateToken = (params = {}) => {
   return jwt.sign(params, authConfig.secret, {
     expiresIn: 86400
@@ -98,6 +99,7 @@ const authenticate = async (req, res) => {
         return res.status(401).json({ message: "User not found" })
 
       const token = crypto.randomBytes(20).toString('hex')
+      const url = process.env.FRONT_URL
 
       const now = new Date()
       now.setHours(now.getHours() + 1)
@@ -111,11 +113,16 @@ const authenticate = async (req, res) => {
          passwordResetExpires: now
        })
 
+    let context = {
+        token,
+        url
+    };
+
       mailer.sendMail({
         to: email,
         from: 'lkg.master@gmail.com',
         template: 'auth/forgot_password',
-        context: { token }
+        context,
       }, (err) => {
         if(err)
           return res.status(400).send({ message: "Cannot send forgot password"})
