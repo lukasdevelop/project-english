@@ -1,6 +1,6 @@
 {
   "host": "smtp.gmail.com",
-  "port": 587,
+  "port": 465,
   "secure": true,
   "user": "lkg.master@gmail.com",
   "pass": "senhaexclusiva"
