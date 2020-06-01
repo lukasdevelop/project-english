@@ -2,11 +2,10 @@ import path from 'path'
 import nodemailer from 'nodemailer'
 import hbs from 'nodemailer-express-handlebars'
 
-import { host, port, user, pass, secure} from '../config/mail.json'
+import { host, port, user, pass} from '../config/mail.json'
 var transport = nodemailer.createTransport({
   host,
   port,
-  secure,
   auth: {
     user,
     pass
