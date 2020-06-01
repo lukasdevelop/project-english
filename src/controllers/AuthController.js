@@ -136,14 +136,13 @@ const authenticate = async (req, res) => {
  }
 
  const resetpassword = async(req, res) => {
-   const {email, password} = req.body
-   const {token} = req.query
+   const {password, token} = req.body
 
    try {
 
     const [user] = await connection('users')
       .select('id', 'email', 'passwordResetExpires', 'passwordResetToken', 'password')
-      .where('email', '=', email)
+      .where('passwordResetToken', '=', token)
 
     if(!user)
       return res.status(401).json({ message: "User not found" })
@@ -162,7 +161,7 @@ const authenticate = async (req, res) => {
 
     await connection('users')
     .select('id', 'email', 'passwordResetExpires', 'passwordResetToken', 'password')
-    .where('email', '=', email)
+    .where('passwordResetToken', '=', token)
     .update({
       password: hash
     })

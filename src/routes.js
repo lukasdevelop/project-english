@@ -33,7 +33,12 @@ routes.post('/auth/sign', celebrate({
 
 routes.post('/auth/forgot-password', AuthController.forgotpassword)
 
-routes.post('/auth/reset-password', AuthController.resetpassword)
+routes.put('/auth/reset-password', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    password: Joi.string().required().min(6),
+    token: Joi.string().required(),
+  })
+}), AuthController.resetpassword)
 
 
 export default routes
