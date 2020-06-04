@@ -120,7 +120,7 @@ const authenticate = async (req, res) => {
 
       mailer.sendMail({
         to: email,
-        subject: "Project English - Recover Email",
+        subject: "Project XP - Recover Email",
         from: 'lkg.master@gmail.com',
         template: 'auth/forgot_password',
         context,
