@@ -20,6 +20,11 @@ io.on('connection', socket =>{
 
   }, 7000)
 
+  socket.on("sendMessage", data => {
+    console.log(data)
+    io.emit('sendMessage', data)
+  })
+
 })
 server.listen(process.env.PORT || 3333, () => {
   console.log('Server ON at PORT', process.env.PORT)
