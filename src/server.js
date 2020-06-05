@@ -20,10 +20,7 @@ io.on('connection', socket =>{
 
   }, 7000)
 
-  let messages = []
-
-  socket.on("sendMessage", (data) => {
-    messages.push(data)
+  socket.on("sendMessage", data => {
     console.log(data)
     io.emit('sendMessage', data)
   })
