@@ -1,9 +1,13 @@
 import express from 'express'
 import { celebrate, Segments, Joi } from 'celebrate'
+import multer from 'multer'
 const routes = express.Router()
+import multerConfig from './config/multer'
 import AuthMiddleware from './middlewares/auth'
 import HomeController from './controllers/HomeController'
 import AuthController from './controllers/AuthController'
+import ForumController from './controllers/ForumController'
+import ProjectsController from './controllers/ProjectsController'
 
 routes.get('/', HomeController.index)
 
@@ -39,6 +43,19 @@ routes.put('/auth/reset-password', celebrate({
     token: Joi.string().required(),
   })
 }), AuthController.resetpassword)
+
+routes.post('/forum', multer(multerConfig).single('file'), ForumController.index)
+
+routes.get('/projects', ProjectsController.index)
+
+routes.post('/projects', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    author: Joi.string().required()
+  })
+}), ProjectsController.create)
+
 
 
 export default routes
